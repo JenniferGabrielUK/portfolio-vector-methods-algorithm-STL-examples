@@ -1,0 +1,241 @@
+// Portfolio - Vector Container Algorithms & Method Examples - STL.cpp
+// Using std::vector integers & OOp Class
+#include <iostream>
+#include <vector>
+#include <string>
+#include <numeric>
+#include <algorithm>
+#include <iomanip>
+#include <functional>
+
+class Person {
+	friend std::ostream& operator<<(std::ostream& os, const Person& p);
+	std::string name;
+	int age;
+public:
+	Person() = default;
+	Person(std::string name, int age) 
+		:name{name}, age{age} {}
+	bool operator<(const Person& rhs) const {            //overloaded less-than operator
+		return this->age < rhs.age;
+	}
+	bool operator==(const Person& rhs) const {           //overloaded equality operator
+		return (this->name == rhs.name && this->age == rhs.age);
+	}
+};
+
+std::ostream& operator<<(std::ostream& os, const Person& p) { //overloaded insertion operator 
+	os << p.name << " : " << p.age;							  //to work with Person class
+	return os;
+}
+
+//use for_each & a lambda expression to display vector elements
+void display2(const std::vector<int>& vec) {
+	std::cout << "[ ";
+	std::for_each(vec.begin(), vec.end(), 
+		[](int x) {std::cout << x << " "; });
+	std::cout << " ]" << std::endl;
+}
+
+//template function to display any vector with ranged based for-loop  TEMPLATE
+template <typename T>
+void display(const std::vector<T>& vec) {
+	std::cout << "[ ";
+	for (const auto& elem : vec)
+		std::cout << elem << " ";
+	std::cout << "]" << std::endl;
+}
+
+//Creates a vector & displays using for_each function with lambda
+void test_1() { 
+	std::cout << "\n=====Test 1=====" << std::endl;
+	std::vector<int> vec{ 1,2,3,4,5 }; //vector 1,2,3,4,5
+	display2(vec);
+	std::vector<int> vec1(10, 100); //ten 100s in the vector
+	display2(vec1);
+}
+
+
+//Size and Capacity exmaples of std::vector
+void test_2() {
+	std::cout << "\n=====Test 2=====" << std::endl;
+	std::vector <int> vec{ 1,2,3,4,5 };
+	display(vec);
+	std::cout << "\nVec size: " << vec.size() << std::endl;
+	std::cout << "Vec max size: " << vec.max_size() << std::endl;
+	std::cout << "Vec capacity: " << vec.capacity() << std::endl;
+	vec.push_back(6);
+	display(vec);
+	std::cout << "\nvec size: " << vec.size() << std::endl;
+	std::cout << "Vec max size: " << vec.max_size() << std::endl;
+	std::cout << "Vec capacity: " << vec.capacity() << std::endl;
+	for (int i{1}; i <= 10; ++i) vec.push_back(i);
+	display(vec);
+	vec.shrink_to_fit();
+	display(vec);
+	std::cout << "\nVec size: " << vec.size() << std::endl;
+	std::cout << "Vec max size: " << vec.max_size() << std::endl;
+	std::cout << "Vec capacity: " << vec.capacity() << std::endl;
+	vec.reserve(100);
+	display(vec);
+	std::cout << "\nVec size: " << vec.size() << std::endl;
+	std::cout << "Vec max size: " << vec.max_size() << std::endl;
+	std::cout << "Vec capacity: " << vec.capacity() << std::endl; 
+	                                                      //capacity reserved to 100.
+}
+
+void test_3() {
+	std::cout << "\n====Test 3=====" << std::endl;
+	std::vector<int> vec{ 1,2,3,4,5 };
+	display(vec);
+	vec[0] = 100; //changes first int to 100 - subscript operator no bounds checking
+	vec.at(1) = 200; //changes second int to 200 .at method
+	display(vec);
+}
+
+	//Using .emplace method
+void test_4() {
+	std::cout << "\n=====Test 4=====" << std::endl;
+	std::vector<Person> account_users;
+	Person p1{ "Jenny", 19 };
+	display(account_users);         //vector still empty
+	account_users.push_back(p1);    //push_back with pre-intitialized class obj
+	display(account_users);
+	account_users.push_back(Person{ "Sam",21}); //push_back with class Constructor
+	display(account_users);
+	account_users.emplace_back("Gemima", 17);
+	display(account_users);
+}
+
+		//Uses .back .front mehtod and pop_back() method
+void test_5() {
+	std::cout << "\n=====Test 5=====" << std::endl;
+	std::vector<Person> account_users{    //initialized three class objects
+		{"Jenny", 19},
+		{"Sam", 21},
+		{"Gemima", 22}
+	};
+	display(account_users);
+	std::cout << "\nFront: " << account_users.front() << std::endl;
+	std::cout << "Back: " << account_users.back() << std::endl;
+	account_users.pop_back();   //removes Gemima object from vector
+	display(account_users);  
+}
+
+		//Uses .clear method & erase method with iterators
+		//erase all even numbers in vector with auto & while/if/else statement
+void test_6() {
+	std::cout << "\n=====Test 6=====" << std::endl;
+	std::vector<int> vec{ 1,2,3,4,5 };
+	display(vec);
+	vec.clear();				 //remove all elements
+	display(vec);
+	vec = { 1,2,3,4,5,6,7,8,9,10 };
+	display(vec);
+	vec.erase(vec.begin(), vec.begin() + 2); //erases first & second
+	display(vec);
+	vec = { 1,2,3,4,5,6,7,8,9,10 }; //erase all even numbers
+	auto it = vec.begin();
+	while (it != vec.end()) {
+		if (*it % 2 == 0)
+			vec.erase(it);
+		else {
+			it++;
+		}               //only increment if not erased
+	}
+	display(vec);
+}
+
+		//uses .swap method to swap vector data
+void test_7() {
+	std::cout << "\n=====Test 7=====" << std::endl;
+	std::vector<int> vec1{ 1,2,3,4,5 };
+	std::vector<int> vec2{ 10,20,30,40,50 };
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+	vec2.swap(vec1);
+	display(vec1);
+	display(vec2);
+}
+
+		//uses .sort method with .begin .end iterators
+void test_8() {
+	std::cout << "\n=====Test 8=====" << std::endl;
+	std::vector<int> vec1{ 1,21,3,40,12 };
+	display(vec1);
+	std::sort(vec1.begin(), vec1.end());
+	display(vec1);
+}
+
+	//uses std::back_inserter to push one vector onto the back 
+	//of another vector 
+	//copy_if elements are even example with lambda
+void test_9() {
+	std::cout << "\n=====Test 9=====" << std::endl;
+	std::vector<int> vec1 {1,2,3,4,5};
+	std::vector<int> vec2 {10,20};
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+	std::copy(vec1.begin(), vec1.end(), std::back_inserter(vec2));
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+	std::vector<int> vec1{ 1,2,3,4,5,6,7,8,9,10};
+	std::vector<int> vec2{ 10, 20 };
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+	std::copy_if(vec1.begin(), vec1.end(), std::back_inserter(vec2),
+		[](int x) {return x % 2 == 0; });
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+}
+
+		//transform over two ranges
+void test_10() {
+	std::cout << "\n=====Test 10=====" << std::endl;
+	std::vector <int> vec1{ 1,2,3,4,5 };
+	std::vector <int> vec2{ 10,20,30,40,50 };
+	std::vector <int> vec3;
+	std::transform(vec1.begin(), vec1.end(), vec2.begin(),
+		std::back_inserter(vec3),
+		[](int x, int y) {return x * y; });
+	display(vec3);
+}
+
+void test_11() {
+	std::cout << "\n=====Test 11=====" << std::endl;
+	std::vector<int> vec1{ 1,2,3,4,5,6,7,8,9,10 };
+	std::vector <int> vec2{ 100,200,300,400};
+	display(vec1);
+	display(vec2);
+	std::cout << std::endl;
+	auto it = std::find(vec1.begin(), vec1.end(), 5);
+	if (it != vec1.end()) {
+		std::cout << "inserting..." << std::endl;
+		vec1.insert(it, vec2.begin(), vec2.end());
+	} else {
+		std::cout << "Sorry, 5 not found." << std::endl;
+	}
+	display(vec1);
+}
+
+int main()
+{
+	test_1();
+	test_2();
+	test_3();
+	test_4();
+	test_5();
+	test_6();
+	test_7();
+	test_8();
+	test_9();
+	test_10();
+	test_11();
+
+	return 0;
+}

@@ -31,6 +31,7 @@ std::cout << std::setw(30) << std::left << std::setfill('-') << "\n" << std::end
 		std::cout << "Sorry, 5 not found." << std::endl;
 	}
 	display(vec_1);
+	std::cout << std::setw(30) << std::left << std::setfill('-') << "\n" << std::endl;
 	auto it_1 = std::find(vec_3.begin(), vec_3.end(), 1.5);
 	if (it_1 != vec_3.end()) {
 		std::cout << "inserting ";
